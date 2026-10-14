@@ -62,28 +62,27 @@
             $species = sanitise_input($_POST["species"]);
         }
 
-        // accommodation
+        // booking
 
-        if (!isset($_POST["accom"]))
-            $err_msg .= "<p>Please select accommodation.</p>";
+        $selected = [];
+        if (isset($_POST["accom"]))
+            $selected[] = sanitise_input($_POST["accom"]);
+        if (isset($_POST["4day"]))
+            $selected[] = sanitise_input($_POST["4day"]);
+        if (isset($_POST["10day"]))
+            $selected[] = sanitise_input($_POST["10day"]);
+
+        if (count($selected) == 0)
+            $err_msg .= "<p>Please select a booking option.</p>";
         else {
-            $accom = sanitise_input($_POST["accom"]);
-        }
-
-        // 4 day tour
-
-        if (!isset($_POST["4day"]))
-            $err_msg .= "<p>Please select 4 day tour.</p>";
-        else {
-            $day4 = sanitise_input($_POST["4day"]);
-        }
-
-        // 10 day tour
-
-        if (!isset($_POST["10day"]))
-            $err_msg .= "<p>Please select 10 day tour.</p>";
-        else {
-            $day10 = sanitise_input($_POST["10day"]);
+            if (count($selected) == 1) {
+                $booking = $selected[0];
+            } elseif (count($selected) == 2) {
+                $booking = $selected[0] . " and " . $selected[1];
+            } else {
+                $last = array_pop($selected);
+                $booking = implode(", ", $selected) . " and " . $last;
+            }
         }
 
         // food
@@ -100,8 +99,8 @@
             $err_msg .= "<p>Please enter the number of travellers.</p>";
         else {
             $partysize = sanitise_input($partysize);
-            if (!is_numeric($partysize) || $partysize < 1 || $partysize > 15){
-                $err_msg .= "<p>Enter a valid number of travellers (1-15).</p>";
+            if (!is_numeric($partysize) || $partysize < 1 || $partysize > 10){
+                $err_msg .= "<p>Enter a valid number of travellers (1-10).</p>";
             }
         }
 
@@ -110,7 +109,7 @@
             echo $err_msg;
         else {
             echo "Welcome $first_name $last_name !";
-            echo "<br>Your are now booked on the $accom and $day4 and $day10";
+            echo "<br>You are now booked on the $booking";
             echo "<br>Species: $species";
             echo "<br>Age: $age";
             echo "<br>Meal Preference: $food";
